@@ -1,8 +1,12 @@
 
+import 'package:athaar_app/home/widget/custom_text_form_field.dart';
+import 'package:athaar_app/l10n/app_localizations.dart';
+import 'package:athaar_app/providers/app_theme_provider.dart';
 import 'package:athaar_app/utils/app_colors.dart';
 import 'package:athaar_app/utils/app_image.dart';
+import 'package:athaar_app/utils/app_style.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class AppBarWidget extends StatelessWidget {
   const AppBarWidget({super.key});
@@ -10,33 +14,23 @@ class AppBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
+    var themeProvider = Provider.of<AppThemeProvider>(context);
 
     return SliverAppBar(
       floating: true,
       snap: true,
       pinned: false,
       backgroundColor: AppColors.transparentColor,
-      elevation: 0,
-      toolbarHeight: 220,
-      titleSpacing: 0,
+      toolbarHeight: 210
+      ,
       automaticallyImplyLeading: false,
 
       title: Column(
-        mainAxisSize: MainAxisSize.min,
+        spacing: height*0.06,
         children: [
           Row(
             children: [
-              Text(
-                'ATHAR',
-                maxLines: 1,
-                style: GoogleFonts.cinzel(
-                  fontSize: 32,
-                  color: const Color(0xffd4af37),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
+              Image.asset(AppImage.logoAthar,width: 100,height: 100,),
               const Spacer(),
 
               IconButton(
@@ -58,47 +52,23 @@ class AppBarWidget extends StatelessWidget {
               ),
             ],
           ),
-
-          Stack(
-            children: [
-              Container(
-                color: AppColors.transparentColor,
-                child: Image.asset(
-                  AppImage.appBarImage,
-                  width: double.infinity,
-                  height: 160,
-                  fit: BoxFit.fill,
-                ),
-              ),
-
-              Positioned(
-                top: height * 0.04,
-                left: width * 0.03,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Hello Magdy',
-                      style: GoogleFonts.cinzel(
-                        fontSize: 20,
-                        color: const Color(0xffd4af37),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    Text(
-                      'Welcome To Athar',
-                      style: GoogleFonts.cinzel(
-                        fontSize: 20,
-                        color: const Color(0xffd4af37),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          CustomTextFormField(
+            filled: true,
+            fillColor: themeProvider.isDarkMode()
+                ? AppColors.darkColor
+                : AppColors.whiteColor,
+            borderSideColor: themeProvider.isDarkMode()
+                ? AppColors.goldAccentColor
+                : AppColors.beigeColor,
+            hintText: AppLocalizations.of(context)!.search,
+            hintStyle: AppStyle.bold16lightGray,
+            prefixIcon: Icon(
+              Icons.search_outlined,
+              color: AppColors.primaryColor,
+            ),
           ),
+
+
         ],
       ),
     );

@@ -1,4 +1,3 @@
-import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:athaar_app/home/splash_screen.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/artifacts_list.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/events_list.dart';
@@ -20,15 +19,17 @@ import 'providers/app_language_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   final themeProvider = AppThemeProvider();
   await themeProvider.loadTheme();
-
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AppLanguageProvider()),
-        ChangeNotifierProvider.value(value: themeProvider),
+        ChangeNotifierProvider(
+          create: (_) => AppLanguageProvider(),
+        ),
+        ChangeNotifierProvider.value(
+          value: themeProvider,
+        ),
       ],
       child: const MyApp(),
     ),
@@ -43,38 +44,40 @@ class MyApp extends StatelessWidget {
     final languageProvider = context.watch<AppLanguageProvider>();
     final themeProvider = context.watch<AppThemeProvider>();
 
-    final initialTheme = themeProvider.isDarkMode()
-        ? AppTheme.darkTheme
-        : AppTheme.lightTheme;
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
 
-    return ThemeProvider(
-      initTheme: initialTheme,
-      builder: (context, animatedTheme) => MaterialApp(
-        debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeProvider.appTheme,
 
-        theme: AppTheme.lightTheme,
-        themeMode: themeProvider.appTheme,
+      builder: (context, child) {
+        return MaterialUiCompatibilityBridge(
+          child: child!,
+        );
+      },
 
-        home: SplashScreen(),
-        initialRoute: AppRoutes.homeRouteScreen,
+      home: SplashScreen(),
+      initialRoute: AppRoutes.homeRouteScreen,
 
-        routes: {
-          AppRoutes.onBoardingRouteScreen: (context) => OnBoardingScreen(),
-          AppRoutes.homeRouteScreen: (context) => HomeScreen(),
-          AppRoutes.loginScreen: (context) => LoginScreen(),
-          AppRoutes.signinScreen: (context) => SignInScreen(),
-          AppRoutes.museumsScreen: (context) => MuseumsList(),
-          AppRoutes.artifactsScreen: (context) => ArtifactsList(),
-          AppRoutes.nearbyScreen: (context) => NearbyList(),
-          AppRoutes.eventsScreen: (context) => EventsList(),
-          AppRoutes.museumsDetailsScreen: (context) => MuseumsDetails(),
-          AppRoutes.experienceScreen: (context) => ExperienceNearYouScreen(),
-        },
+      routes: {
+        AppRoutes.onBoardingRouteScreen: (context) => OnBoardingScreen(),
+        AppRoutes.homeRouteScreen: (context) => HomeScreen(),
+        AppRoutes.loginScreen: (context) => LoginScreen(),
+        AppRoutes.signinScreen: (context) => SignInScreen(),
+        AppRoutes.museumsScreen: (context) => MuseumsList(),
+        AppRoutes.artifactsScreen: (context) => ArtifactsList(),
+        AppRoutes.nearbyScreen: (context) => NearbyList(),
+        AppRoutes.eventsScreen: (context) => EventsList(),
+        AppRoutes.museumsDetailsScreen: (context) => MuseumsDetails(),
+        AppRoutes.experienceScreen: (context) => ExperienceNearYouScreen(),
+      },
 
-        localizationsDelegates: G
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: Locale(languageProvider.appLanguage),
-      ),
+      localizationsDelegates:
+      AppLocalizations.localizationsDelegates,
+      supportedLocales:
+      AppLocalizations.supportedLocales,
+      locale: Locale(languageProvider.appLanguage),
     );
   }
 }

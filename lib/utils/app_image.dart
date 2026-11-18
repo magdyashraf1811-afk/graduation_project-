@@ -8,6 +8,7 @@ class AppImage {
   static const String nextIcon = "assets/icons/next_icon.png";
   static const String getStartIcon = "assets/icons/get_start_icon.png";
   static const String logo = "assets/image/logo.png";
+  static const String logoAthar = "assets/image/logo_athar.png";
   static const String googleLogo = "assets/icons/image 6.png";
   static const String horusLogo = "assets/image/horas_logo 1.png";
   static const String graecoRomanMuseumImage = "assets/image/graeco_roman_museum.png";

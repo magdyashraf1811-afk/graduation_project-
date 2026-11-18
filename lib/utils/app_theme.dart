@@ -1,11 +1,10 @@
-
 import 'package:material_ui/material_ui.dart';
 import 'app_colors.dart';
 
 class AppTheme {
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
-    scaffoldBackgroundColor: AppColors.beigeColor,
+    scaffoldBackgroundColor: AppColors.beigeDesertColor,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.goldColor,
       brightness: Brightness.light,
@@ -15,7 +14,7 @@ class AppTheme {
 
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.blackColor,
+    scaffoldBackgroundColor: AppColors.backgroundDarkColor,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.goldColor,
       brightness: Brightness.dark,

@@ -41,11 +41,7 @@ dependencies:
   flutter_native_splash: ^2.4.7
   google_fonts: ^8.2.1
   shared_preferences: ^2.5.5
-  animated_theme_switcher: ^2.0.10
   flutter_animate: ^4.5.2
-
-
-
   material_ui: any
   cupertino_ui: any
 dev_dependencies:
