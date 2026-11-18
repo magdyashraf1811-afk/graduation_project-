@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 
 class AppColors {
   static const Color whiteColor = Color(0xffffffff);
+  static const Color backgroundDarkColor = Color(0xff2e1824);
   static const Color darkColor = Color(0xff111111);
   static const Color blackColor = Color(0xff000000);
   static const Color goldColor = Color(0xffE6B84A);
