@@ -1,0 +1,1 @@
+enum TicketType { regular, robot, selfGuided }
