@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 
 import 'package:athaar_app/l10n/app_localizations.dart';
@@ -20,96 +19,119 @@ class HorusBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     final themeProvider = Provider.of<AppThemeProvider>(context);
     final isDark = themeProvider.isDarkMode();
-
     final gold = isDark ? AppColors.gold : AppColors.darkGold;
-
     final inactiveColor = isDark
         ? AppColors.inactiveDark
         : AppColors.inactiveLight;
-
-    final localization = AppLocalizations.of(context)!;
-
+    final backgroundColors = isDark
+        ? [
+            AppColors.glassDarkBlue.withOpacity(0.30),
+            AppColors.navy.withOpacity(0.38),
+            AppColors.glassDeepBlue.withOpacity(0.32),
+          ]
+        : [
+            AppColors.glassWhite.withOpacity(0.32),
+            AppColors.glassWarmWhite.withOpacity(0.40),
+            AppColors.glassBeige.withOpacity(0.32),
+          ];
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
+      padding: EdgeInsets.only(
+        right: width * 0.03,
+        left: width * 0.03,
+        bottom: height * 0.03,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(35),
+        borderRadius: BorderRadius.circular(23),
         child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 22,
-            sigmaY: 22,
-          ),
+          filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
           child: Container(
+            height: 82,
             decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFF17212B).withOpacity(0.72)
-                  : Colors.white.withOpacity(0.65),
-
-              borderRadius: BorderRadius.circular(35),
-
-              border: Border.all(
-                color: isDark
-                    ? gold.withOpacity(0.25)
-                    : Colors.white.withOpacity(0.75),
-                width: 1.2,
+              borderRadius: BorderRadius.circular(23),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: backgroundColors,
               ),
-
+              border: Border.all(
+                color: gold.withOpacity(isDark ? 0.90 : 0.80),
+                width: 1.5,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: isDark
-                      ? Colors.black.withOpacity(0.25)
-                      : AppColors.darkGold.withOpacity(0.10),
-                  blurRadius: 20,
-                  spreadRadius: 1,
-                  offset: const Offset(0, 6),
+                  color: gold.withOpacity(isDark ? 0.22 : 0.15),
+                  blurRadius: 14,
+                  spreadRadius: 0.5,
+                ),
+                BoxShadow(
+                  color: AppColors.blackColor.withOpacity(isDark ? 0.30 : 0.08),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
-
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 7,
-              ),
-              child: Row(
-                children: [
-                  _buildItem(
-                    index: 0,
-                    label: localization.home,
-                    icon: Icons.home_rounded,
-                    gold: gold,
-                    inactiveColor: inactiveColor,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  left: 25,
+                  right: 25,
+                  child: Container(
+                    height: 1,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.transparentColor,
+                          AppColors.whiteColor.withOpacity(
+                            isDark ? 0.20 : 0.45,
+                          ),
+                          AppColors.transparentColor,
+                        ],
+                      ),
+                    ),
                   ),
-
-                  _buildItem(
-                    index: 1,
-                    label: localization.tickets,
-                    icon: Icons.confirmation_number_rounded,
-                    gold: gold,
-                    inactiveColor: inactiveColor,
-                  ),
-
-                  _buildItem(
-                    index: 2,
-                    label: localization.horus,
-                    isHorus: true,
-                    gold: gold,
-                    inactiveColor: inactiveColor,
-                  ),
-
-                  _buildItem(
-                    index: 3,
-                    label: localization.profile,
-                    icon: Icons.person_rounded,
-                    gold: gold,
-                    inactiveColor: inactiveColor,
-                  ),
-                ],
-              ),
+                ),
+                Row(
+                  children: [
+                    _buildItem(
+                      index: 0,
+                      label: AppLocalizations.of(context)!.home,
+                      icon: Icons.home_rounded,
+                      gold: gold,
+                      inactiveColor: inactiveColor,
+                      isDark: themeProvider.isDarkMode(),
+                    ),
+                    _buildItem(
+                      index: 1,
+                      label: AppLocalizations.of(context)!.tickets,
+                      icon: Icons.confirmation_number_rounded,
+                      gold: gold,
+                      inactiveColor: inactiveColor,
+                      isDark: themeProvider.isDarkMode(),
+                    ),
+                    _buildItem(
+                      index: 2,
+                      label: AppLocalizations.of(context)!.horus,
+                      isHorus: true,
+                      gold: gold,
+                      inactiveColor: inactiveColor,
+                      isDark: themeProvider.isDarkMode(),
+                    ),
+                    _buildItem(
+                      index: 3,
+                      label: AppLocalizations.of(context)!.profile,
+                      icon: Icons.person_rounded,
+                      gold: gold,
+                      inactiveColor: inactiveColor,
+                      isDark: themeProvider.isDarkMode(),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
@@ -120,66 +142,79 @@ class HorusBottomNavBar extends StatelessWidget {
   Widget _buildItem({
     required int index,
     required String label,
+    IconData? icon,
     required Color gold,
     required Color inactiveColor,
-    IconData? icon,
+    required bool isDark,
     bool isHorus = false,
   }) {
     final isSelected = selectedIndex == index;
     final itemColor = isSelected ? gold : inactiveColor;
-
     return Expanded(
       child: GestureDetector(
         onTap: () => onItemSelected(index),
         behavior: HitTestBehavior.opaque,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedScale(
-                scale: isSelected ? 1.08 : 1.0,
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOut,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  child: isHorus
-                      ? Image.asset(
-                    'assets/icons/horus_icon.png',
-                    key: const ValueKey('horus'),
-                    width: 27,
-                    height: 27,
-                    color: itemColor,
-                  )
-                      : Icon(
-                    icon,
-                    key: ValueKey(index),
-                    size: 27,
-                    color: itemColor,
-                  ),
-                ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              width: 44,
+              height: 39,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? gold.withOpacity(isDark ? 0.13 : 0.12)
+                    : AppColors.transparentColor,
+                shape: BoxShape.circle,
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: gold.withOpacity(0.22),
+                          blurRadius: 14,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : [],
               ),
-
-              const SizedBox(height: 4),
-
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: isSelected
-                      ? FontWeight.w600
-                      : FontWeight.w400,
-                  color: itemColor,
-                ),
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
+              child: Center(
+                child: isHorus
+                    ? Image.asset(
+                        'assets/icons/horus_icon.png',
+                        width: 45,
+                        height: 45,
+                        color: itemColor,
+                      )
+                    : Icon(icon, size: 29, color: itemColor),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: itemColor,
+              ),
+            ),
+            const SizedBox(height: 4),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              width: isSelected ? 30 : 0,
+              height: 2.5,
+              decoration: BoxDecoration(
+                color: gold,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: isSelected
+                    ? [BoxShadow(color: gold.withOpacity(0.65), blurRadius: 8)]
+                    : [],
+              ),
+            ),
+          ],
         ),
       ),
     );
