@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../providers/app_theme_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_routes.dart';
-import '../../utils/app_style.dart';
 
 class ListViewWidget extends StatelessWidget {
   final double height;
@@ -14,6 +13,7 @@ class ListViewWidget extends StatelessWidget {
   final List<String> images;
   final IconData? icon;
   final TextStyle style ;
+  final VoidCallback? onImageTap ;
 
   const ListViewWidget({
     super.key,
@@ -23,6 +23,7 @@ class ListViewWidget extends StatelessWidget {
     required this.itemWidth,
     required this.titles,
     required this.images,
+     this.onImageTap,
     this.icon,
   }) : assert(titles.length == images.length);
 
@@ -48,12 +49,13 @@ class ListViewWidget extends StatelessWidget {
                 width: 2,
               ),
               borderRadius: BorderRadius.circular(20),
-              image: DecorationImage(
+              image: images[index].trim().isNotEmpty
+                  ? DecorationImage(
                 image: AssetImage(images[index]),
                 fit: BoxFit.cover,
-              ),
-            ),
-            child: Stack(
+              )
+                  : null,
+            ),            child: Stack(
               children: [
                 Positioned(
                   bottom: 0,

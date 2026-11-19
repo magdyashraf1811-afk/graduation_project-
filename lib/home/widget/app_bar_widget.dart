@@ -21,12 +21,14 @@ class AppBarWidget extends StatelessWidget {
       snap: true,
       pinned: false,
       backgroundColor: AppColors.transparentColor,
-      toolbarHeight: 210
+      toolbarHeight: 220
       ,
       automaticallyImplyLeading: false,
 
       title: Column(
-        spacing: height*0.06,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: height*0.05,
         children: [
           Row(
             children: [

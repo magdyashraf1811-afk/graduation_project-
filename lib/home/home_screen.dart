@@ -3,7 +3,6 @@ import 'package:athaar_app/home/tabs/home_tab/horas_bottom_bar.dart';
 import 'package:athaar_app/home/tabs/horus_tab/horus_tab.dart';
 import 'package:athaar_app/home/tabs/profile_tab/profile_tab.dart';
 import 'package:material_ui/material_ui.dart';
-
 import 'tabs/tickets_tab/tickets_screen.dart';
 
 class HomeScreen extends StatefulWidget {

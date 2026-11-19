@@ -1,10 +1,9 @@
 import 'package:athaar_app/home/splash_screen.dart';
-import 'package:athaar_app/home/tabs/home_tab/icons_button/artifacts_list.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/events_list.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/experience_near_you_screen.dart';
-import 'package:athaar_app/home/tabs/home_tab/icons_button/museums_details.dart';
-import 'package:athaar_app/home/tabs/home_tab/icons_button/museums_list.dart';
-import 'package:athaar_app/home/tabs/home_tab/icons_button/nearby_list.dart';
+import 'package:athaar_app/home/tabs/home_tab/icons_button/museum_image_gallery.dart';
+import 'package:athaar_app/home/tabs/home_tab/icons_button/museum_image_gallery.dart';
+import 'package:athaar_app/home/tabs/home_tab/icons_button/musuem_details.dart';
 import 'package:athaar_app/providers/app_theme_provider.dart';
 import 'package:athaar_app/utils/app_routes.dart';
 import 'package:athaar_app/utils/app_theme.dart';
@@ -14,6 +13,7 @@ import 'home/auth/login/login_screen.dart';
 import 'home/auth/registration/sign_in_screen.dart';
 import 'home/home_screen.dart';
 import 'home/onboarding/onboarding_screen.dart';
+import 'home/tabs/home_tab/icons_button/museums_list.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/app_language_provider.dart';
 
@@ -66,11 +66,12 @@ class MyApp extends StatelessWidget {
         AppRoutes.loginScreen: (context) => LoginScreen(),
         AppRoutes.signinScreen: (context) => SignInScreen(),
         AppRoutes.museumsScreen: (context) => MuseumsList(),
-        AppRoutes.artifactsScreen: (context) => ArtifactsList(),
-        AppRoutes.nearbyScreen: (context) => NearbyList(),
         AppRoutes.eventsScreen: (context) => EventsList(),
-        AppRoutes.museumsDetailsScreen: (context) => MuseumsDetails(),
         AppRoutes.experienceScreen: (context) => ExperienceNearYouScreen(),
+        AppRoutes.museumsDetailsScreen: (context) => MuseumDetailsScreen(
+          image: 'assets/images/grand_museum.png',
+          title: 'Grand Egyptian Museum',
+        )
       },
 
       localizationsDelegates:
