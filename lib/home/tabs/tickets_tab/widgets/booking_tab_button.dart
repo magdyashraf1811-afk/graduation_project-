@@ -1,6 +1,5 @@
 import 'package:athaar_app/utils/app_colors.dart';
-import 'package:flutter/material.dart';
-import 'package:athaar_app/utils/app_colors.dart';
+import 'package:material_ui/material_ui.dart';
 
 class BookingTabButton extends StatelessWidget {
   final IconData icon;

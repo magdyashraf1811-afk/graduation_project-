@@ -1,5 +1,5 @@
 import 'package:athaar_app/home/tabs/tickets_tab/widgets/tickets_info_row.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:athaar_app/utils/app_colors.dart';
 import '../models/ticket_model1.dart';
 import '../models/ticket_model1.dart';
