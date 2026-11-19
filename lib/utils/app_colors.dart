@@ -1,6 +1,4 @@
 import 'package:material_ui/material_ui.dart';
-
-
 class AppColors {
   static const Color whiteColor = Color(0xffffffff);
   static const Color backgroundDarkColor = Color(0xff2e1824);

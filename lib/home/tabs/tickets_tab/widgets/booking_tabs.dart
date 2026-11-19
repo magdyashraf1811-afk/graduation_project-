@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'booking_tab_button.dart';
 
 class BookingTabs extends StatelessWidget {
