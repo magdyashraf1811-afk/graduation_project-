@@ -1,8 +1,6 @@
 import 'package:athaar_app/home/splash_screen.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/events_list.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/experience_near_you_screen.dart';
-import 'package:athaar_app/home/tabs/home_tab/icons_button/museum_image_gallery.dart';
-import 'package:athaar_app/home/tabs/home_tab/icons_button/museum_image_gallery.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/musuem_details.dart';
 import 'package:athaar_app/providers/app_theme_provider.dart';
 import 'package:athaar_app/utils/app_routes.dart';

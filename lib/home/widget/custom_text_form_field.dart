@@ -1,20 +1,28 @@
+
 import 'package:athaar_app/utils/app_colors.dart';
 import 'package:material_ui/material_ui.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  Color? borderSideColor;
-  Color? fillColor;
-  bool? filled;
+  final Color? borderSideColor;
+  final Color? fillColor;
+  final bool? filled;
 
-  String? hintText;
-  TextStyle? hintStyle;
-  String? labelText;
-  TextStyle? labelStyle;
-  Widget? prefixIcon;
-  Widget? suffixIcon;
-  int? maxLines;
+  final String? hintText;
+  final TextStyle? hintStyle;
+  final String? labelText;
+  final TextStyle? labelStyle;
 
-  CustomTextFormField({
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
+
+  final int? maxLines;
+  final TextEditingController? controller;
+  final bool obscureText;
+  final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
+
+  const CustomTextFormField({
     super.key,
     this.suffixIcon,
     this.prefixIcon,
@@ -26,12 +34,22 @@ class CustomTextFormField extends StatelessWidget {
     this.hintText,
     this.labelStyle,
     this.labelText,
+    this.controller,
+    this.obscureText = false,
+    this.keyboardType,
+    this.validator,
+    this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      maxLines: maxLines ?? 1,
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      validator: validator,
+      onChanged: onChanged,
+      maxLines: obscureText ? 1 : (maxLines ?? 1),
       decoration: InputDecoration(
         enabledBorder: builtDecorationBorder(
           borderColor: borderSideColor ?? AppColors.transparentColor,
@@ -39,7 +57,9 @@ class CustomTextFormField extends StatelessWidget {
         focusedBorder: builtDecorationBorder(
           borderColor: borderSideColor ?? AppColors.transparentColor,
         ),
-        errorBorder: builtDecorationBorder(borderColor: AppColors.redColor),
+        errorBorder: builtDecorationBorder(
+          borderColor: AppColors.redColor,
+        ),
         focusedErrorBorder: builtDecorationBorder(
           borderColor: AppColors.redColor,
         ),
@@ -55,10 +75,15 @@ class CustomTextFormField extends StatelessWidget {
     );
   }
 
-  OutlineInputBorder builtDecorationBorder({required Color borderColor}) {
+  OutlineInputBorder builtDecorationBorder({
+    required Color borderColor,
+  }) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide(width: 2, color: borderColor),
+      borderSide: BorderSide(
+        width: 2,
+        color: borderColor,
+      ),
     );
   }
 }
