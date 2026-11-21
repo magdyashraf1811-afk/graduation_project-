@@ -28,7 +28,6 @@ class AppColors {
   static const Color inactiveDark = Color(0xFFB8B8B8);
   static const Color inactiveLight = Color(0xFF77716B);
   static const Color iconsColor = Color(0xFFE5B96B);
-
   static const Color goldBorderColor = Color(0x80E6B84A);
   static const Color goldGlowColor = Color(0x1AE6B84A);
   static const Color fieldBgColor = Color(0xFF171717);
