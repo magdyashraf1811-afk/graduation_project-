@@ -3,6 +3,8 @@ import 'package:athaar_app/home/splash_screen.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/events_list.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/experience_near_you_screen.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/musuem_details.dart';
+import 'package:athaar_app/home/tabs/tickets_tab/book_your_visit_screen1.dart';
+import 'package:athaar_app/home/tabs/tickets_tab/tickets_tab.dart';
 import 'package:athaar_app/models/scan_apis/api_service.dart';
 import 'package:athaar_app/models/scan_apis/artifact_repository.dart';
 import 'package:athaar_app/providers/app_theme_provider.dart';
@@ -46,9 +48,6 @@ Future<void> main() async {
   testApi();
 }
 
-// ========================================
-// ATHAR API TEST
-// ========================================
 
 Future<void> testApi() async {
   final api = ApiService();
@@ -94,9 +93,6 @@ Future<void> testApi() async {
   }
 }
 
-// ========================================
-// MY APP
-// ========================================
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -151,12 +147,17 @@ class MyApp extends StatelessWidget {
 
         AppRoutes.experienceScreen: (context) =>
             ExperienceNearYouScreen(),
+        AppRoutes.bookingScreen: (context) =>
+            BookYourVisitScreen1(),
+        AppRoutes.bookingTab: (context) =>
+            TicketsTab(),
 
         AppRoutes.museumsDetailsScreen: (context) =>
             MuseumDetailsScreen(
               image: 'assets/images/grand_museum.png',
               title: 'Grand Egyptian Museum',
             ),
+
       },
 
       // Localization
