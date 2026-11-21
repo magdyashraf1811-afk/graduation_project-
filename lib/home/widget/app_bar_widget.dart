@@ -17,18 +17,18 @@ class AppBarWidget extends StatelessWidget {
     var themeProvider = Provider.of<AppThemeProvider>(context);
 
     return SliverAppBar(
+
       floating: true,
       snap: true,
       pinned: false,
       backgroundColor: AppColors.transparentColor,
-      toolbarHeight: 220
-      ,
+      toolbarHeight: 180,
       automaticallyImplyLeading: false,
 
       title: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: height*0.05,
+        spacing: height*0.01,
         children: [
           Row(
             children: [

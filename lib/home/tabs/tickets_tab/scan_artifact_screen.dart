@@ -1,321 +1,481 @@
+
 import 'dart:io';
 
-import 'package:camera/camera.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:athaar_app/utils/app_colors.dart';
-import 'models/scan_result.dart';
-import 'widgets/capture_button.dart';
-import 'widgets/qr_brackets_painter.dart';
-import 'widgets/scan_action_button.dart';
-import 'widgets/scan_camera_view.dart';
+import 'package:dio/dio.dart';
+import 'package:just_audio/just_audio.dart';
 
-class ScanArtifactScreen extends StatefulWidget {
+import 'package:athaar_app/models/scan_apis/api_service.dart';
+import 'package:athaar_app/models/scan_apis/prediction_model.dart';
+
+class PredictionTestScreen extends StatefulWidget {
   final bool showBack;
 
-  const ScanArtifactScreen({super.key, this.showBack = true});
+  const PredictionTestScreen({
+    super.key,
+    this.showBack = true,
+  });
 
   @override
-  State<ScanArtifactScreen> createState() => _ScanArtifactScreenState();
+  State<PredictionTestScreen> createState() =>
+      _PredictionTestScreenState();
 }
 
-class _ScanArtifactScreenState extends State<ScanArtifactScreen>
-    with WidgetsBindingObserver {
-  CameraController? _camera;
-  MobileScannerController? _qr;
-  bool _flashOn = false;
-  bool _qrMode = false;
-  bool _initializing = false;
-  bool _handled = false; // عشان النتيجة ما تتعالجش مرتين
-  String? _error;
+class _PredictionTestScreenState extends State<PredictionTestScreen> {
+  final ApiService _apiService = ApiService();
+  final ImagePicker _picker = ImagePicker();
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _initCamera();
+  File? _selectedImage;
+  PredictionModel? _prediction;
+
+  bool _isLoading = false;
+  bool _isAudioLoading = false;
+
+  String? _errorMessage;
+  String? _audioError;
+
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+
+    if (image == null) return;
+
+    await _audioPlayer.stop();
+
+    setState(() {
+      _selectedImage = File(image.path);
+      _prediction = null;
+      _errorMessage = null;
+      _audioError = null;
+    });
+  }
+
+  Future<void> _predictImage() async {
+    if (_selectedImage == null) return;
+
+    setState(() {
+      _isLoading = true;
+      _prediction = null;
+      _errorMessage = null;
+      _audioError = null;
+    });
+
+    await _audioPlayer.stop();
+
+    try {
+      final response = await _apiService.predictArtifact(
+        _selectedImage!.path,
+      );
+
+      final prediction = PredictionModel.fromJson(
+        Map<String, dynamic>.from(response.data as Map),
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _prediction = prediction;
+      });
+    } on DioException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _errorMessage =
+            e.response?.data?.toString() ??
+                e.message ??
+                'Server connection failed';
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _errorMessage = e.toString();
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _toggleAudio() async {
+    final audioUrl = _prediction?.audioUrl ?? '';
+
+    if (audioUrl.isEmpty) {
+      setState(() {
+        _audioError = 'Audio URL is not available.';
+      });
+      return;
+    }
+
+    try {
+      setState(() {
+        _isAudioLoading = true;
+        _audioError = null;
+      });
+
+      if (_audioPlayer.playerState.processingState ==
+          ProcessingState.completed) {
+        await _audioPlayer.seek(Duration.zero);
+      }
+
+      if (_audioPlayer.playing) {
+        await _audioPlayer.pause();
+      } else {
+        if (_audioPlayer.audioSource == null) {
+          await _audioPlayer.setUrl(audioUrl);
+        }
+
+        await _audioPlayer.play();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _audioError = 'Could not play audio: $e';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAudioLoading = false;
+        });
+      }
+    }
+  }
+
+  String _formatDuration(Duration duration) {
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds.remainder(60);
+
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  Widget _buildAudioPlayer() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFF252B30),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: const Color(0xFFD4AF63).withOpacity(0.35),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Audio Guide',
+            style: TextStyle(
+              color: Color(0xFFD4AF63),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 15),
+
+          StreamBuilder<PlayerState>(
+            stream: _audioPlayer.playerStateStream,
+            builder: (context, snapshot) {
+              final playerState = snapshot.data;
+              final isPlaying = playerState?.playing ?? false;
+
+              return Row(
+                children: [
+                  IconButton(
+                    onPressed: _isAudioLoading
+                        ? null
+                        : _toggleAudio,
+                    iconSize: 42,
+                    color: const Color(0xFFD4AF63),
+                    icon: _isAudioLoading
+                        ? const SizedBox(
+                      width: 25,
+                      height: 25,
+                      child: CircularProgressIndicator(
+                        color: Color(0xFFD4AF63),
+                        strokeWidth: 2,
+                      ),
+                    )
+                        : Icon(
+                      isPlaying
+                          ? Icons.pause_circle_filled
+                          : Icons.play_circle_fill,
+                    ),
+                  ),
+
+                  const SizedBox(width: 10),
+
+                  const Expanded(
+                    child: Text(
+                      'Listen to artifact description',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          StreamBuilder<Duration>(
+            stream: _audioPlayer.positionStream,
+            builder: (context, positionSnapshot) {
+              final position =
+                  positionSnapshot.data ?? Duration.zero;
+
+              return StreamBuilder<Duration?>(
+                stream: _audioPlayer.durationStream,
+                builder: (context, durationSnapshot) {
+                  final duration =
+                      durationSnapshot.data ?? Duration.zero;
+
+                  final maxValue = duration.inMilliseconds
+                      .toDouble();
+
+                  final currentValue = position.inMilliseconds
+                      .toDouble()
+                      .clamp(0.0, maxValue > 0 ? maxValue : 1.0);
+
+                  return Column(
+                    children: [
+                      Slider(
+                        value: currentValue,
+                        max: maxValue > 0 ? maxValue : 1.0,
+                        activeColor: const Color(0xFFD4AF63),
+                        inactiveColor: Colors.white24,
+                        onChanged: maxValue > 0
+                            ? (value) {
+                          _audioPlayer.seek(
+                            Duration(
+                              milliseconds: value.round(),
+                            ),
+                          );
+                        }
+                            : null,
+                      ),
+
+                      Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _formatDuration(position),
+                            style: const TextStyle(
+                              color: Colors.white54,
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            _formatDuration(duration),
+                            style: const TextStyle(
+                              color: Colors.white54,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+
+          if (_audioError != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              _audioError!,
+              style: const TextStyle(
+                color: Colors.redAccent,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _camera?.dispose();
-    _qr?.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.inactive) {
-      if (_qrMode) {
-        _qr?.stop().catchError((_) {});
-      } else {
-        final old = _camera;
-        if (old == null) return;
-        setState(() => _camera = null);
-        old.dispose();
-      }
-    } else if (state == AppLifecycleState.resumed) {
-      if (_qrMode) {
-        _qr?.start().catchError((_) {});
-      } else {
-        _initCamera();
-      }
-    }
-  }
-
-  // ---------------- camera ----------------
-
-  Future<void> _initCamera() async {
-    if (_initializing || _qrMode || _camera != null) return;
-    _initializing = true;
-    try {
-      final cameras = await availableCameras();
-      final back = cameras.firstWhere(
-            (c) => c.lensDirection == CameraLensDirection.back,
-        orElse: () => cameras.first,
-      );
-      final controller =
-      CameraController(back, ResolutionPreset.high, enableAudio: false);
-      await controller.initialize();
-      if (!mounted || _qrMode) {
-        await controller.dispose();
-        return;
-      }
-      setState(() {
-        _camera = controller;
-        _error = null;
-      });
-    } on CameraException catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e.code == 'CameraAccessDenied'
-            ? 'Camera permission is required.\nPlease allow it from the phone settings.'
-            : 'Could not open the camera.';
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _error = 'No camera available on this device.');
-    } finally {
-      _initializing = false;
-    }
-  }
-
-  Future<void> _toggleFlash() async {
-    final turnOn = !_flashOn;
-    try {
-      if (_qrMode) {
-        await _qr?.toggleTorch();
-      } else {
-        await _camera?.setFlashMode(turnOn ? FlashMode.torch : FlashMode.off);
-      }
-      if (mounted) setState(() => _flashOn = turnOn);
-    } catch (_) {
-      // الجهاز ممكن ميكونش في فلاش
-    }
-  }
-
-  Future<void> _setQrMode(bool enable) async {
-    if (enable == _qrMode) return;
-    if (enable) {
-      final oldCamera = _camera;
-      setState(() {
-        _camera = null;
-        _qrMode = true;
-        _flashOn = false;
-        _error = null;
-      });
-      await WidgetsBinding.instance.endOfFrame;
-      await oldCamera?.dispose();
-      if (!mounted) return;
-      setState(() => _qr = MobileScannerController());
-    } else {
-      final oldQr = _qr;
-      setState(() {
-        _qr = null;
-        _qrMode = false;
-        _flashOn = false;
-      });
-      await WidgetsBinding.instance.endOfFrame;
-      await oldQr?.dispose();
-      await _initCamera();
-    }
-  }
-
-  // ---------------- الأفعال ----------------
-
-  Future<void> _capture() async {
-    if (_qrMode) {
-
-      await _setQrMode(false);
-      return;
-    }
-    final cam = _camera;
-    if (cam == null || !cam.value.isInitialized || cam.value.isTakingPicture) {
-      return;
-    }
-    try {
-      final file = await cam.takePicture();
-      await _onResult(ScanResult.image(file.path));
-    } on CameraException {
-    }
-  }
-
-  Future<void> _pickFromGallery() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked != null) await _onResult(ScanResult.image(picked.path));
-  }
-
-  void _onQrDetected(BarcodeCapture capture) {
-    if (capture.barcodes.isEmpty) return;
-    final value = capture.barcodes.first.rawValue;
-    if (value == null || value.isEmpty) return;
-    _onResult(ScanResult.qr(value));
-  }
-
-  Future<void> _onResult(ScanResult result) async {
-    if (_handled || !mounted) return;
-    _handled = true;
-
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.fieldBgColor,
-        title: const Text(
-          'Scan result (temporary)',
-          style: TextStyle(color: AppColors.goldColor, fontSize: 16),
-        ),
-        content: result.type == ScanResultType.image
-            ? Image.file(File(result.value), height: 220, fit: BoxFit.cover)
-            : Text(result.value, style: const TextStyle(color: Colors.white)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-
-    _handled = false;
-  }
-
-  // ---------------- الشكل ----------------
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-          child: Column(
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 12),
-              const Text(
-                'Point your camera at the artifact or scan the QR code',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-              const SizedBox(height: 16),
-              Expanded(child: _buildCameraArea()),
-              const SizedBox(height: 24),
-              _buildBottomActions(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+      backgroundColor: const Color(0xFF15191C),
 
-  Widget _buildHeader() {
-    return Row(
-      children: [
-        widget.showBack
-            ? IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: AppColors.goldColor, size: 20),
-        )
-            : const SizedBox(width: 48),
-        const Expanded(
-          child: Text(
-            'Scan Artifact',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColors.goldColor,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        IconButton(
-          onPressed: _toggleFlash,
-          icon: Icon(
-            _flashOn ? Icons.flash_on : Icons.flash_off,
-            color: AppColors.goldColor,
-            size: 24,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCameraArea() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.goldBorderColor),
+      appBar: AppBar(
+        automaticallyImplyLeading: widget.showBack,
+        title: const Text('Artifact Recognition Test'),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(21),
-        child: Stack(
-          fit: StackFit.expand,
+
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ScanCameraView(
-              camera: _camera,
-              qrController: _qr,
-              qrMode: _qrMode,
-              error: _error,
-              onQrDetected: _onQrDetected,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: CustomPaint(painter: QrBracketsPainter()),
-            ),
-            Positioned(
-              top: 24,
-              right: 24,
-              child: Icon(
-                _flashOn ? Icons.flash_on : Icons.flash_off,
-                color: AppColors.goldColor,
-                size: 20,
+            Container(
+              height: 260,
+              decoration: BoxDecoration(
+                color: const Color(0xFF252B30),
+                borderRadius: BorderRadius.circular(18),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: _selectedImage == null
+                  ? const Center(
+                child: Icon(
+                  Icons.image_outlined,
+                  color: Colors.white54,
+                  size: 70,
+                ),
+              )
+                  : Image.file(
+                _selectedImage!,
+                fit: BoxFit.cover,
               ),
             ),
+
+            const SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: _isLoading ? null : _pickImage,
+              child: const Text('Choose Image'),
+            ),
+
+            const SizedBox(height: 12),
+
+            ElevatedButton(
+              onPressed: _selectedImage == null || _isLoading
+                  ? null
+                  : _predictImage,
+              child: _isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Predict Artifact'),
+            ),
+
+            const SizedBox(height: 25),
+
+            if (_errorMessage != null)
+              _buildResultCard(
+                title: 'Error',
+                child: Text(
+                  _errorMessage!,
+                  style: const TextStyle(
+                    color: Colors.redAccent,
+                  ),
+                ),
+              ),
+
+            if (_prediction != null) ...[
+              if (_prediction!.recognized) ...[
+                _buildResultCard(
+                  title: 'Recognized Artifact',
+                  child: Column(
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _prediction!.name,
+                        style: const TextStyle(
+                          color: Color(0xFFD4AF63),
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      Text(
+                        _prediction!.description,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          height: 1.7,
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      Text(
+                        'Confidence: ${(_prediction!.confidence * 100).toStringAsFixed(2)}%',
+                        style: const TextStyle(
+                          color: Color(0xFFD4AF63),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        'Artifact ID: ${_prediction!.artifactId}',
+                        style: const TextStyle(
+                          color: Colors.white54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 18),
+
+                _buildAudioPlayer(),
+              ] else
+                _buildResultCard(
+                  title: 'Not Recognized',
+                  child: const Text(
+                    'The artifact could not be recognized. Try another image.',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBottomActions() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        ScanActionButton(
-          icon: _qrMode ? Icons.photo_camera_outlined : Icons.qr_code_scanner,
-          label: _qrMode ? 'Camera' : 'Scan QR Code',
-          onTap: () => _setQrMode(!_qrMode),
+  Widget _buildResultCard({
+    required String title,
+    required Widget child,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFF252B30),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: const Color(0xFFD4AF63).withOpacity(0.35),
         ),
-        CaptureButton(onTap: _capture),
-        ScanActionButton(
-          icon: Icons.photo_outlined,
-          label: 'Gallery',
-          onTap: _pickFromGallery,
-        ),
-      ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: Color(0xFFD4AF63),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 14),
+          child,
+        ],
+      ),
     );
   }
 }
