@@ -9,5 +9,7 @@ class AppRoutes {
   static const String fMSeeAllScreen = 'featured_screen';
   static const String experienceScreen = 'experience_screen';
   static const String museumsDetailsScreen = 'museums_details_screen';
+  static const String bookingScreen = 'booking_screen';
+  static const String bookingTab = 'booking_tap';
 
 }

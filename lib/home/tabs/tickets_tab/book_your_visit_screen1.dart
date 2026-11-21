@@ -1,5 +1,8 @@
+
 import 'package:material_ui/material_ui.dart';
 import 'package:athaar_app/providers/tickets_provider.dart';
+import 'package:athaar_app/utils/app_colors.dart';
+
 import 'book_your_visit_screen2.dart';
 import 'models/ticket_model1.dart';
 import 'models/ticket_type.dart';
@@ -10,16 +13,23 @@ import 'widgets/visit_dropdown_field.dart';
 import 'widgets/visit_header.dart';
 
 class BookYourVisitScreen1 extends StatefulWidget {
-  const BookYourVisitScreen1({super.key});
+  final bool showBackButton;
+
+  const BookYourVisitScreen1({
+    super.key,
+    this.showBackButton = false,
+  });
 
   @override
-  State<BookYourVisitScreen1> createState() => _BookYourVisitScreen1State();
+  State<BookYourVisitScreen1> createState() =>
+      _BookYourVisitScreen1State();
 }
 
-class _BookYourVisitScreen1State extends State<BookYourVisitScreen1> {
+class _BookYourVisitScreen1State
+    extends State<BookYourVisitScreen1> {
   TicketType _selectedType = TicketType.regular;
 
-  /// بيبني التذكرة (بيانات تجريبية لحد ما الـ dropdowns تشتغل)
+  // Build ticket (temporary data until dropdowns are connected)
   TicketModel _buildTicket() {
     return TicketModel(
       museumName: 'Grand Egyptian Museum',
@@ -33,26 +43,35 @@ class _BookYourVisitScreen1State extends State<BookYourVisitScreen1> {
     );
   }
 
+  // Open ticket screen
   void _openTicketScreen(TicketModel ticket) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => BookYourVisitScreen2(ticket: ticket),
+        builder: (_) => BookYourVisitScreen2(
+          ticket: ticket,
+          showBackButton: widget.showBackButton,
+        ),
       ),
     );
   }
 
-  /// Continue: نسجّل الحجز وبعدين نفتح التذكرة
+  // Continue: save booking and open ticket
   void _bookTicket() {
     final ticket = _buildTicket();
+
     TicketsProvider.instance.addTicket(ticket);
+
     _openTicketScreen(ticket);
   }
 
-  /// View My Booking: آخر تذكرة اتحجزت (أو تجريبية لو مفيش)
+  // View My Booking
   void _openMyBooking() {
     final tickets = TicketsProvider.instance.tickets;
-    _openTicketScreen(tickets.isNotEmpty ? tickets.last : _buildTicket());
+
+    _openTicketScreen(
+      tickets.isNotEmpty ? tickets.last : _buildTicket(),
+    );
   }
 
   @override
@@ -66,49 +85,87 @@ class _BookYourVisitScreen1State extends State<BookYourVisitScreen1> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Back Button (only from Museum Details)
+                if (widget.showBackButton) ...[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new,
+                        color: AppColors.goldAccentColor,
+                      ),
+                    ),
+                  ),
+                ],
+
                 const VisitHeader(),
+
                 const SizedBox(height: 20),
+
                 BookingTabs(
                   isMyBookingSelected: false,
                   onMyBookingTap: _openMyBooking,
                 ),
+
                 const SizedBox(height: 20),
+
                 TicketTypeSelector(
                   selected: _selectedType,
-                  onChanged: (type) => setState(() => _selectedType = type),
+                  onChanged: (type) {
+                    setState(() {
+                      _selectedType = type;
+                    });
+                  },
                 ),
+
                 const SizedBox(height: 20),
+
                 const VisitDropdownField(
                   label: 'Choose a Museum',
                   placeholder: 'Select your destination',
                   icon: Icons.account_balance,
                 ),
+
                 const SizedBox(height: 14),
+
                 const VisitDropdownField(
                   label: 'Choose Visit Date',
                   placeholder: 'pick a day for your visit',
                   icon: Icons.date_range,
                 ),
+
                 const SizedBox(height: 14),
+
                 const VisitDropdownField(
                   label: 'Select Time',
                   placeholder: 'Select an option',
                   icon: Icons.access_time,
                 ),
+
                 const SizedBox(height: 14),
+
                 const VisitDropdownField(
                   label: 'Tour Language',
                   placeholder: 'Choose your tour language',
                   icon: Icons.translate,
                 ),
+
                 const SizedBox(height: 14),
+
                 const VisitDropdownField(
                   label: 'Are you a Student',
                   placeholder: 'Select an option',
                   icon: Icons.school_outlined,
                 ),
+
                 const SizedBox(height: 24),
-                ContinuePaymentButton(onPressed: _bookTicket),
+
+                ContinuePaymentButton(
+                  onPressed: _bookTicket,
+                ),
               ],
             ),
           ),

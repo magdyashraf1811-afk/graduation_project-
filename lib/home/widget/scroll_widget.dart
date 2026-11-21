@@ -1,5 +1,5 @@
-
 import 'package:animations/animations.dart';
+import 'package:athaar_app/home/tabs/home_tab/icons_button/museums_list.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/musuem_details.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +31,6 @@ class ScrollWidget extends StatelessWidget {
           spacing: height * 0.02,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-
             // Featured Museums
             Row(
               spacing: width * 0.01,
@@ -43,9 +42,21 @@ class ScrollWidget extends StatelessWidget {
                 ),
                 Text(
                   AppLocalizations.of(context)!.feature_museums,
-                  style: isDark
-                      ? AppStyle.bold18White
-                      : AppStyle.bold18Black,
+                  style: isDark ? AppStyle.bold18White : AppStyle.bold18Black,
+                ),
+                Spacer(),
+                TextButton(
+                  onPressed: () { Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MuseumsList(),
+                    ),
+                  );
+                  },
+                  child: Text(
+                    AppLocalizations.of(context)!.see_all,
+                    style: AppStyle.bold14Primary,
+                  ),
                 ),
               ],
             ),
@@ -107,9 +118,7 @@ class ScrollWidget extends StatelessWidget {
                 ),
                 Text(
                   AppLocalizations.of(context)!.near,
-                  style: isDark
-                      ? AppStyle.bold18White
-                      : AppStyle.bold18Black,
+                  style: isDark ? AppStyle.bold18White : AppStyle.bold18Black,
                 ),
               ],
             ),
@@ -151,9 +160,7 @@ class ScrollWidget extends StatelessWidget {
                 ),
                 Text(
                   AppLocalizations.of(context)!.feature_museums,
-                  style: isDark
-                      ? AppStyle.bold18White
-                      : AppStyle.bold18Black,
+                  style: isDark ? AppStyle.bold18White : AppStyle.bold18Black,
                 ),
               ],
             ),
@@ -187,9 +194,7 @@ class ScrollWidget extends StatelessWidget {
                 ),
                 Text(
                   AppLocalizations.of(context)!.feature_museums,
-                  style: isDark
-                      ? AppStyle.bold18White
-                      : AppStyle.bold18Black,
+                  style: isDark ? AppStyle.bold18White : AppStyle.bold18Black,
                 ),
               ],
             ),
@@ -223,9 +228,7 @@ class ScrollWidget extends StatelessWidget {
                 ),
                 Text(
                   AppLocalizations.of(context)!.feature_museums,
-                  style: isDark
-                      ? AppStyle.bold18White
-                      : AppStyle.bold18Black,
+                  style: isDark ? AppStyle.bold18White : AppStyle.bold18Black,
                 ),
               ],
             ),

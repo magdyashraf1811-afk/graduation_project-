@@ -13,10 +13,12 @@ import 'scan_artifact_screen.dart';
 
 class BookYourVisitScreen2 extends StatelessWidget {
   final TicketModel ticket;
+  final bool showBackButton;
 
   const BookYourVisitScreen2({
     super.key,
     required this.ticket,
+    this.showBackButton = false,
   });
 
   @override
@@ -30,6 +32,22 @@ class BookYourVisitScreen2 extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Back Button
+                if (showBackButton) ...[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new,
+                        color: Color(0xFFD4AF37),
+                      ),
+                    ),
+                  ),
+                ],
+
                 const VisitHeader(),
 
                 const SizedBox(height: 20),

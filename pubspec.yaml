@@ -51,6 +51,7 @@ dependencies:
   http: ^1.6.0
   just_audio: ^0.10.5
   dio: ^5.11.1
+  shimmer: ^4.0.0
 dev_dependencies:
 
   flutter_test:

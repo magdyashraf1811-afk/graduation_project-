@@ -1,6 +1,8 @@
-
+import 'package:athaar_app/home/tabs/tickets_tab/book_your_visit_screen1.dart';
+import 'package:athaar_app/home/tabs/tickets_tab/tickets_tab.dart';
 import 'package:athaar_app/utils/app_colors.dart';
 import 'package:athaar_app/utils/app_image.dart';
+import 'package:athaar_app/utils/app_routes.dart';
 import 'package:material_ui/material_ui.dart';
 
 class MuseumDetailsScreen extends StatefulWidget {
@@ -8,12 +10,12 @@ class MuseumDetailsScreen extends StatefulWidget {
 
   const MuseumDetailsScreen({
     super.key,
-    required this.title, required String image,
+    required this.title,
+    required String image,
   });
 
   @override
-  State<MuseumDetailsScreen> createState() =>
-      _MuseumDetailsScreenState();
+  State<MuseumDetailsScreen> createState() => _MuseumDetailsScreenState();
 }
 
 class _MuseumDetailsScreenState extends State<MuseumDetailsScreen> {
@@ -58,9 +60,7 @@ class _MuseumDetailsScreenState extends State<MuseumDetailsScreen> {
                   },
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(18),
                         child: Image.asset(
@@ -79,27 +79,22 @@ class _MuseumDetailsScreenState extends State<MuseumDetailsScreen> {
               // Dots Indicator
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  images.length,
-                      (index) {
-                    final isSelected = currentIndex == index;
+                children: List.generate(images.length, (index) {
+                  final isSelected = currentIndex == index;
 
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                      ),
-                      width: isSelected ? 22 : 7,
-                      height: 7,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.goldAccentColor
-                            : Colors.white38,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    );
-                  },
-                ),
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: isSelected ? 22 : 7,
+                    height: 7,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.goldAccentColor
+                          : Colors.white38,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  );
+                }),
               ),
 
               Padding(
@@ -134,7 +129,14 @@ class _MuseumDetailsScreenState extends State<MuseumDetailsScreen> {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const BookYourVisitScreen1(showBackButton: true,),
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.goldAccentColor,
                       shape: RoundedRectangleBorder(
