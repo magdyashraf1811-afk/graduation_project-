@@ -79,7 +79,7 @@ class BookYourVisitScreen2 extends StatelessWidget {
                       ).push(
                         MaterialPageRoute(
                           builder: (_) =>
-                          const PredictionTestScreen(),
+                          const ScanArtifactScreen(),
                         ),
                       );
                     },

@@ -1,12 +1,6 @@
-
-import 'package:athaar_app/home/widget/custom_text_form_field.dart';
-import 'package:athaar_app/l10n/app_localizations.dart';
-import 'package:athaar_app/providers/app_theme_provider.dart';
 import 'package:athaar_app/utils/app_colors.dart';
 import 'package:athaar_app/utils/app_image.dart';
-import 'package:athaar_app/utils/app_style.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:provider/provider.dart';
 
 class AppBarWidget extends StatelessWidget {
   const AppBarWidget({super.key});
@@ -14,15 +8,14 @@ class AppBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    var themeProvider = Provider.of<AppThemeProvider>(context);
 
     return SliverAppBar(
 
       floating: true,
       snap: true,
-      pinned: false,
-      backgroundColor: AppColors.transparentColor,
-      toolbarHeight: 180,
+      pinned: true,
+      backgroundColor: Colors.black,
+      toolbarHeight: 90,
       automaticallyImplyLeading: false,
 
       title: Column(
@@ -53,21 +46,6 @@ class AppBarWidget extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-          CustomTextFormField(
-            filled: true,
-            fillColor: themeProvider.isDarkMode()
-                ? AppColors.darkColor
-                : AppColors.whiteColor,
-            borderSideColor: themeProvider.isDarkMode()
-                ? AppColors.goldAccentColor
-                : AppColors.beigeColor,
-            hintText: AppLocalizations.of(context)!.search,
-            hintStyle: AppStyle.bold16lightGray,
-            prefixIcon: Icon(
-              Icons.search_outlined,
-              color: AppColors.primaryColor,
-            ),
           ),
 
 
