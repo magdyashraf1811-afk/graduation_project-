@@ -50,7 +50,7 @@ class HorusBottomNavBar extends StatelessWidget {
           child: Container(
             height: 82,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(50),
               color: Colors.white.withValues(alpha: 0.15),
             ),
             child: Row(
@@ -134,7 +134,7 @@ class HorusBottomNavBar extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
 
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 250),

@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/museums_list.dart';
 import 'package:athaar_app/home/tabs/home_tab/icons_button/musuem_details.dart';
+import 'package:athaar_app/home/widget/custom_text_form_field.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -31,6 +32,22 @@ class ScrollWidget extends StatelessWidget {
           spacing: height * 0.02,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            CustomTextFormField(
+              filled: true,
+              fillColor: themeProvider.isDarkMode()
+                  ? AppColors.darkColor
+                  : AppColors.whiteColor,
+              borderSideColor: themeProvider.isDarkMode()
+                  ? AppColors.goldAccentColor
+                  : AppColors.beigeColor,
+              hintText: AppLocalizations.of(context)!.search,
+              hintStyle: AppStyle.bold16lightGray,
+              prefixIcon: Icon(
+                Icons.search_outlined,
+                color: AppColors.primaryColor,
+              ),
+            ),
+
             // Featured Museums
             Row(
               spacing: width * 0.01,
